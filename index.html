@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mavi Imiliya - Attendance System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .logo span {
+            color: #f1c40f;
+            font-size: 14px;
+            display: block;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d68910;
+        }
+
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .auth-container h2 {
+            margin-bottom: 30px;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .dashboard {
+            display: none;
+        }
+
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .class-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 2px solid #ecf0f1;
+        }
+
+        .class-card:hover {
+            transform: translateY(-5px);
+            border-color: #3498db;
+        }
+
+        .class-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .class-card p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .class-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .students-table th {
+            background: #34495e;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .students-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .students-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .attendance-list {
+            margin-top: 20px;
+        }
+
+        .attendance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .roll-number-badge {
+            background: #3498db;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .student-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .student-details h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            width: 120px;
+            color: #7f8c8d;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+        }
+
+        .attendance-history {
+            margin-top: 20px;
+        }
+
+        .history-item {
+            padding: 10px;
+            background: white;
+            border-left: 4px solid #27ae60;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>Mavi Imiliya</h1>
+                <span>Attendance Management System</span>
+            </div>
+            <div class="nav-buttons" id="navButtons">
+                <button class="btn btn-primary" onclick="showLogin()">Login</button>
+                <button class="btn btn-success" onclick="showSignup()">Sign Up</button>
+            </div>
+        </header>
+
+        <div id="alertMessage" class="alert"></div>
+
+        <!-- Login Section -->
+        <div id="loginSection" class="auth-container">
+            <h2>Teacher Login</h2>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter your password">
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="login()">Login</button>
+            <p style="text-align: center; margin-top: 20px;">
+                Don't have an account? <a href="#" onclick="showSignup()">Sign Up</a>
+            </p>
+        </div>
+
+        <!-- Signup Section -->
+        <div id="signupSection" class="auth-container" style="display: none;">
+            <h2>Create Teacher Account</h2>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="signupName" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="signupEmail" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="signupPassword" placeholder="Enter your password">
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" id="signupConfirmPassword" placeholder="Confirm your password">
+            </div>
+            <button class="btn btn-success" style="width: 100%;" onclick="signup()">Create Account</button>
+            <p style="text-align: center; margin-top: 20px;">
+                Already have an account? <a href="#" onclick="showLogin()">Login</a>
+            </p>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="dashboard">
+            <div style="padding: 20px; background: #f8f9fa; display: flex; justify-content: space-between; align-items: center;">
+                <h2 id="welcomeMessage" style="color: #2c3e50;"></h2>
+                <button class="btn btn-danger" onclick="logout()">Logout</button>
+            </div>
+
+            <!-- Classes View -->
+            <div id="classesView">
+                <div style="padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="color: #2c3e50;">My Classes</h3>
+                    <button class="btn btn-success" onclick="showCreateClassModal()">+ Create New Class</button>
+                </div>
+                <div id="classesList" class="classes-grid"></div>
+            </div>
+
+            <!-- Class Details View -->
+            <div id="classDetailsView" style="display: none;">
+                <div style="padding: 20px; background: #f8f9fa;">
+                    <button class="btn" onclick="backToClasses()">← Back to Classes</button>
+                    <h3 id="currentClassName" style="margin-top: 20px; color: #2c3e50;"></h3>
+                </div>
+                
+                <div style="padding: 20px;">
+                    <div style="display: flex; gap: 15px; margin-bottom: 30px;">
+                        <button class="btn btn-primary" onclick="showTakeAttendance()">Take Attendance</button>
+                        <button class="btn btn-success" onclick="showAddStudent()">Add New Student</button>
+                        <button class="btn btn-warning" onclick="showAllStudents()">All Students Details</button>
+                    </div>
+
+                    <div id="attendanceSection" style="display: none;">
+                        <h4 style="color: #2c3e50; margin-bottom: 20px;">Take Attendance - <span id="attendanceDate"></span></h4>
+                        <div id="studentsAttendanceList"></div>
+                        <button class="btn btn-success" style="margin-top: 20px;" onclick="submitAttendance()">Submit Attendance</button>
+                    </div>
+
+                    <div id="addStudentSection" style="display: none;">
+                        <h4 style="color: #2c3e50; margin-bottom: 20px;">Add New Student</h4>
+                        <div class="form-group">
+                            <label>Roll Number</label>
+                            <input type="number" id="studentRollNo" placeholder="Enter roll number">
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="studentName" placeholder="Enter student name">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="studentPhone" placeholder="Enter phone number">
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text" id="studentAddress" placeholder="Enter address">
+                        </div>
+                        <div class="form-group">
+                            <label>Parents Name</label>
+                            <input type="text" id="studentParents" placeholder="Enter parents name">
+                        </div>
+                        <button class="btn btn-success" onclick="addStudent()">Add Student</button>
+                    </div>
+
+                    <div id="allStudentsSection" style="display: none;">
+                        <h4 style="color: #2c3e50; margin-bottom: 20px;">All Students Details</h4>
+                        <div id="studentsListContainer"></div>
+                    </div>
+
+                    <div id="studentDetailsSection" style="display: none;">
+                        <button class="btn" onclick="backToAllStudents()">← Back to All Students</button>
+                        <div id="studentDetailedInfo"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Class Modal -->
+    <div id="createClassModal" class="modal">
+        <div class="modal-content">
+            <h3 style="color: #2c3e50; margin-bottom: 20px;">Create New Class</h3>
+            <div class="form-group">
+                <label>Class Name</label>
+                <input type="text" id="className" placeholder="e.g., Class 12 Technical">
+            </div>
+            <div class="form-group">
+                <label>Section</label>
+                <input type="text" id="classSection" placeholder="e.g., A">
+            </div>
+            <div class="form-group">
+                <label>Subject</label>
+                <input type="text" id="classSubject" placeholder="e.g., Computer Engineering">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-success" onclick="createClass()">Create Class</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize localStorage data
+        function initializeData() {
+            if (!localStorage.getItem('teachers')) {
+                localStorage.setItem('teachers', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('classes')) {
+                localStorage.setItem('classes', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('students')) {
+                localStorage.setItem('students', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('attendance')) {
+                localStorage.setItem('attendance', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('currentUser')) {
+                localStorage.setItem('currentUser', JSON.stringify(null));
+            }
+        }
+
+        initializeData();
+
+        let currentClassId = null;
+        let selectedStudentId = null;
+
+        // Auth Functions
+        function showLogin() {
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('signupSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'none';
+        }
+
+        function showSignup() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('signupSection').style.display = 'block';
+            document.getElementById('dashboardSection').style.display = 'none';
+        }
+
+        function signup() {
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+            if (!name || !email || !password) {
+                showAlert('All fields are required!', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match!', 'error');
+                return;
+            }
+
+            const teachers = JSON.parse(localStorage.getItem('teachers'));
+            
+            if (teachers.find(t => t.email === email)) {
+                showAlert('Email already exists!', 'error');
+                return;
+            }
+
+            const newTeacher = {
+                id: Date.now().toString(),
+                name,
+                email,
+                password
+            };
+
+            teachers.push(newTeacher);
+            localStorage.setItem('teachers', JSON.stringify(teachers));
+            
+            showAlert('Account created successfully! Please login.', 'success');
+            showLogin();
+        }
+
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showAlert('Please enter email and password!', 'error');
+                return;
+            }
+
+            const teachers = JSON.parse(localStorage.getItem('teachers'));
+            const teacher = teachers.find(t => t.email === email && t.password === password);
+
+            if (teacher) {
+                localStorage.setItem('currentUser', JSON.stringify(teacher));
+                showDashboard();
+            } else {
+                showAlert('Invalid email or password!', 'error');
+            }
+        }
+
+        function logout() {
+            localStorage.setItem('currentUser', JSON.stringify(null));
+            showLogin();
+        }
+
+        function showDashboard() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                showLogin();
+                return;
+            }
+
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('signupSection').style.display = 'none';
+            document.getElementById('dashboardSection').style.display = 'block';
+            document.getElementById('welcomeMessage').innerHTML = `Welcome, ${currentUser.name}!`;
+            
+            loadClasses();
+        }
+
+        // Class Functions
+        function showCreateClassModal() {
+            document.getElementById('createClassModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('createClassModal').style.display = 'none';
+        }
+
+        function createClass() {
+            const className = document.getElementById('className').value;
+            const section = document.getElementById('classSection').value;
+            const subject = document.getElementById('classSubject').value;
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
+            if (!className) {
+                showAlert('Class name is required!', 'error');
+                return;
+            }
+
+            const classes = JSON.parse(localStorage.getItem('classes'));
+            
+            // Check if class name already exists
+            if (classes.find(c => c.name === className && c.teacherId === currentUser.id)) {
+                showAlert('Class name already exists!', 'error');
+                return;
+            }
+
+            const newClass = {
+                id: Date.now().toString(),
+                name: className,
+                section: section,
+                subject: subject,
+                teacherId: currentUser.id,
+                createdAt: new Date().toISOString()
+            };
+
+            classes.push(newClass);
+            localStorage.setItem('classes', JSON.stringify(classes));
+
+            closeModal();
+            loadClasses();
+            showAlert('Class created successfully!', 'success');
+        }
+
+        function loadClasses() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const classes = JSON.parse(localStorage.getItem('classes'));
+            const teacherClasses = classes.filter(c => c.teacherId === currentUser.id);
+
+            const classesList = document.getElementById('classesList');
+            classesList.innerHTML = '';
+
+            if (teacherClasses.length === 0) {
+                classesList.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 40px;">No classes yet. Create your first class!</p>';
+                return;
+            }
+
+            teacherClasses.forEach(cls => {
+                const students = JSON.parse(localStorage.getItem('students'));
+                const classStudents = students.filter(s => s.classId === cls.id);
+                
+                const classCard = document.createElement('div');
+                classCard.className = 'class-card';
+                classCard.innerHTML = `
+                    <h3>${cls.name} ${cls.section ? '- ' + cls.section : ''}</h3>
+                    <p>${cls.subject || 'No subject'}</p>
+                    <p style="margin-top: 10px;">Students: ${classStudents.length}</p>
+                    <div class="class-actions">
+                        <button class="btn btn-primary" onclick="openClass('${cls.id}')">Open Class</button>
+                    </div>
+                `;
+                classesList.appendChild(classCard);
+            });
+        }
+
+        function openClass(classId) {
+            currentClassId = classId;
+            const classes = JSON.parse(localStorage.getItem('classes'));
+            const currentClass = classes.find(c => c.id === classId);
+            
+            document.getElementById('classesView').style.display = 'none';
+            document.getElementById('classDetailsView').style.display = 'block';
+            document.getElementById('currentClassName').innerHTML = `${currentClass.name} ${currentClass.section || ''}`;
+            
+            // Hide all sections
+            document.getElementById('attendanceSection').style.display = 'none';
+            document.getElementById('addStudentSection').style.display = 'none';
+            document.getElementById('allStudentsSection').style.display = 'none';
+            document.getElementById('studentDetailsSection').style.display = 'none';
+        }
+
+        function backToClasses() {
+            document.getElementById('classesView').style.display = 'block';
+            document.getElementById('classDetailsView').style.display = 'none';
+            currentClassId = null;
+        }
+
+        // Student Functions
+        function showAddStudent() {
+            document.getElementById('attendanceSection').style.display = 'none';
+            document.getElementById('addStudentSection').style.display = 'block';
+            document.getElementById('allStudentsSection').style.display = 'none';
+            document.getElementById('studentDetailsSection').style.display = 'none';
+            
+            // Clear form
+            document.getElementById('studentRollNo').value = '';
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentPhone').value = '';
+            document.getElementById('studentAddress').value = '';
+            document.getElementById('studentParents').value = '';
+        }
+
+        function addStudent() {
+            const rollNo = document.getElementById('studentRollNo').value;
+            const name = document.getElementById('studentName').value;
+            const phone = document.getElementById('studentPhone').value;
+            const address = document.getElementById('studentAddress').value;
+            const parents = document.getElementById('studentParents').value;
+
+            if (!rollNo || !name || !phone || !address || !parents) {
+                showAlert('All fields are required!', 'error');
+                return;
+            }
+
+            const students = JSON.parse(localStorage.getItem('students'));
+            
+            // Check if roll number exists in this class
+            if (students.find(s => s.classId === currentClassId && s.rollNo === parseInt(rollNo))) {
+                showAlert('Roll number already exists in this class!', 'error');
+                return;
+            }
+
+            const newStudent = {
+                id: Date.now().toString(),
+                classId: currentClassId,
+                rollNo: parseInt(rollNo),
+                name: name,
+                phone: phone,
+                address: address,
+                parents: parents,
+                createdAt: new Date().toISOString()
+            };
+
+            students.push(newStudent);
+            localStorage.setItem('students', JSON.stringify(students));
+
+            showAlert('Student added successfully!', 'success');
+            showAddStudent(); // Clear form
+        }
+
+        function showAllStudents() {
+            document.getElementById('attendanceSection').style.display = 'none';
+            document.getElementById('addStudentSection').style.display = 'none';
+            document.getElementById('allStudentsSection').style.display = 'block';
+            document.getElementById('studentDetailsSection').style.display = 'none';
+
+            const students = JSON.parse(localStorage.getItem('students'));
+            const classStudents = students.filter(s => s.classId === currentClassId);
+
+            const container = document.getElementById('studentsListContainer');
+            
+            if (classStudents.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 40px;">No students in this class yet.</p>';
+                return;
+            }
+
+            let html = '<table class="students-table">';
+            html += '<tr><th>Roll No</th><th>Name</th><th>Phone</th><th>Parents</th><th>Action</th></tr>';
+            
+            classStudents.sort((a, b) => a.rollNo - b.rollNo).forEach(student => {
+                html += `<tr>
+                    <td><span class="roll-number-badge">${student.rollNo}</span></td>
+                    <td>${student.name}</td>
+                    <td>${student.phone}</td>
+                    <td>${student.parents}</td>
+                    <td><button class="btn btn-primary" onclick="viewStudentDetails('${student.id}')">View Details</button></td>
+                </tr>`;
+            });
+            
+            html += '</table>';
+            container.innerHTML = html;
+        }
+
+        function viewStudentDetails(studentId) {
+            selectedStudentId = studentId;
+            
+            const students = JSON.parse(localStorage.getItem('students'));
+            const student = students.find(s => s.id === studentId);
+            const attendance = JSON.parse(localStorage.getItem('attendance'));
+            const studentAttendance = attendance.filter(a => a.studentId === studentId);
+
+            document.getElementById('allStudentsSection').style.display = 'none';
+            document.getElementById('studentDetailsSection').style.display = 'block';
+
+            let html = `
+                <div class="student-details">
+                    <h4>Student Information</h4>
+                    <div class="detail-row">
+                        <span class="detail-label">Roll Number:</span>
+                        <span class="detail-value"><span class="roll-number-badge">${student.rollNo}</span></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Full Name:</span>
+                        <span class="detail-value">${student.name}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Phone Number:</span>
+                        <span class="detail-value">${student.phone}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Address:</span>
+                        <span class="detail-value">${student.address}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Parents Name:</span>
+                        <span class="detail-value">${student.parents}</span>
+                    </div>
+                </div>
+                <div class="attendance-history">
+                    <h4 style="color: #2c3e50; margin-bottom: 15px;">Attendance History</h4>
+            `;
+
+            if (studentAttendance.length === 0) {
+                html += '<p style="color: #7f8c8d;">No attendance records yet.</p>';
+            } else {
+                studentAttendance.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(record => {
+                    html += `
+                        <div class="history-item">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-weight: 600;">${new Date(record.date).toLocaleDateString()}</span>
+                                <span style="color: #27ae60; font-weight: 600;">Present ✓</span>
+                            </div>
+                            <div style="color: #7f8c8d; margin-top: 5px;">Marked by Teacher</div>
+                        </div>
+                    `;
+                });
+            }
+
+            html += '</div>';
+            document.getElementById('studentDetailedInfo').innerHTML = html;
+        }
+
+        function backToAllStudents() {
+            document.getElementById('allStudentsSection').style.display = 'block';
+            document.getElementById('studentDetailsSection').style.display = 'none';
+            showAllStudents();
+        }
+
+        // Attendance Functions
+        function showTakeAttendance() {
+            document.getElementById('attendanceSection').style.display = 'block';
+            document.getElementById('addStudentSection').style.display = 'none';
+            document.getElementById('allStudentsSection').style.display = 'none';
+            document.getElementById('studentDetailsSection').style.display = 'none';
+
+            const date = new Date();
+            document.getElementById('attendanceDate').innerHTML = date.toLocaleDateString();
+
+            const students = JSON.parse(localStorage.getItem('students'));
+            const classStudents = students.filter(s => s.classId === currentClassId);
+
+            const list = document.getElementById('studentsAttendanceList');
+            
+            if (classStudents.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #7f8c8d; padding: 40px;">No students in this class. Add students first!</p>';
+                return;
+            }
+
+            let html = '';
+            classStudents.sort((a, b) => a.rollNo - b.rollNo).forEach(student => {
+                html += `
+                    <div class="attendance-item">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="attendance_${student.id}" value="${student.id}">
+                            <span style="font-weight: 600;">Roll No: ${student.rollNo}</span> - ${student.name}
+                        </label>
+                    </div>
+                `;
+            });
+
+            list.innerHTML = html;
+        }
+
+        function submitAttendance() {
+            const checkboxes = document.querySelectorAll('#studentsAttendanceList input[type="checkbox"]:checked');
+            const date = new Date().toISOString().split('T')[0];
+            
+            if (checkboxes.length === 0) {
+                showAlert('Please mark at least one student as present!', 'error');
+                return;
+            }
+
+            const attendance = JSON.parse(localStorage.getItem('attendance'));
+
+            checkboxes.forEach(checkbox => {
+                const newAttendance = {
+                    id: Date.now() + checkbox.value,
+                    studentId: checkbox.value,
+                    classId: currentClassId,
+                    date: date,
+                    status: 'present'
+                };
+                attendance.push(newAttendance);
+            });
+
+            localStorage.setItem('attendance', JSON.stringify(attendance));
+            showAlert('Attendance submitted successfully!', 'success');
+            showTakeAttendance(); // Refresh the page
+        }
+
+        // Utility Functions
+        function showAlert(message, type) {
+            const alert = document.getElementById('alertMessage');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = message;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+
+        // Check if user is already logged in
+        window.onload = function() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser) {
+                showDashboard(); //shishir
+            }
+        }
+    </script>
+</body>
+</html>
